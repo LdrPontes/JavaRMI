@@ -49,9 +49,14 @@ public class DigitalSignSender {
             System.out.println("Falha ao criar a assinatura");
             return null;
         }
-    }
 
+    }
+    
     public PublicKey getPublicKey() {
         return publicKey;
+    }
+    
+    public PrivateKey getPrivateKey() {
+        return privateKey;
     }
 }

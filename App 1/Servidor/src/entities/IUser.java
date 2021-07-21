@@ -1,6 +1,7 @@
 package entities;
 
 import java.rmi.*;
+import java.security.PublicKey;
 
 public interface IUser extends Remote {
     public void notify(String text) throws RemoteException;
@@ -9,7 +10,7 @@ public interface IUser extends Remote {
 
     public String getTelephone() throws RemoteException;
 
-    public String getPublicKey() throws RemoteException;
+    public PublicKey getPublicKey() throws RemoteException;
 
     public void notifyRide(IUser user) throws RemoteException;
 

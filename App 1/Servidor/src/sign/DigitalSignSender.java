@@ -55,4 +55,8 @@ public class DigitalSignSender {
     public PublicKey getPublicKey() {
         return publicKey;
     }
+    
+    public PrivateKey getPrivateKey() {
+        return privateKey;
+    }
 }
