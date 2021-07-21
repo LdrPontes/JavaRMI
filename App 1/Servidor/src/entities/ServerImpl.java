@@ -1,22 +1,22 @@
 package entities;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
 import java.util.ArrayList;
 
-import sign.DigitalSignSender;
 import sign.DigitalSignReceiver;
+import entities.IServer;
 
 public class ServerImpl extends UnicastRemoteObject implements IServer {
-    private DigitalSignSender sender = new DigitalSignSender();
-    private DigitalSignReceiver receiver = new DigitalSignReceiver();
+    private final DigitalSignReceiver receiver = new DigitalSignReceiver();
 
-    private ArrayList<Travel> travelDriverList = new ArrayList<Travel>();
-    private ArrayList<Travel> travelPassengerList = new ArrayList<Travel>();
+    private final ArrayList<Travel> travelDriverList = new ArrayList<Travel>();
+    private final ArrayList<Travel> travelPassengerList = new ArrayList<Travel>();
 
-    private Registry nameService = LocateRegistry.createRegistry(1099);
+    private final Registry nameService = LocateRegistry.createRegistry(1099);
 
     private int nextRideID = 1;
 
@@ -27,13 +27,13 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
 
     @Override
     public void signUp(IUser client) throws RemoteException {
-        this.nameService.rebind(client.getTelephone(), client);
+        this.nameService.rebind(client.getTelephone(), UnicastRemoteObject.exportObject(client, 1099));
         client.notify("\nBem-vindo " + client.getName());
     }
 
     @Override
     public int registerRideInterest(IUser client, String start, String end, String date, byte[] sign)
-            throws RemoteException {
+            throws RemoteException, NotBoundException {
 
         int rideId = nextRideID++;
         
@@ -50,7 +50,7 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
 
     @Override
     public int registerPassengerInterest(IUser client, String start, String end, String date, int numberPassenger,
-            byte[] sign) throws RemoteException {
+            byte[] sign) throws RemoteException, NotBoundException {
         int rideId = nextRideID++;
 
         IUser user = (IUser) this.nameService.lookup(client.getTelephone());
@@ -83,22 +83,26 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
         for (Travel travel: this.travelDriverList) {
             
             if (thisTravel.compare(travel))
-                result.concat(travel.getUser().getName() + "\n\n");
+                result = result.concat(travel.getUser().getName() + "\n\n");
         }
 
         return result;
 
     }
 
-    public void notifyPassengers(int idTravel) {
+    public void notifyPassengers(int idTravel) throws RemoteException {
         
-        Travel newTravel;
+        Travel newTravel = null;
         
         for (Travel travel : this.travelDriverList) {
             if (travel.getID() == idTravel) {
                 newTravel = travel;
                 break;
             }
+        }
+
+        if(newTravel == null) {
+            return;
         }
 
         for (Travel travel : this.travelPassengerList) {
@@ -110,10 +114,10 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
         }
     }
 
-    public void notifyDrivers(int newInterest) {
+    public void notifyDrivers(int idTravel) throws RemoteException {
 
          
-        Travel newTravel;
+        Travel newTravel = null;
         
         for (Travel travel : this.travelPassengerList) {
             if (travel.getID() == idTravel) {
@@ -122,10 +126,14 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
             }
         }
 
+        if(newTravel == null) {
+            return;
+        }
+
         for (Travel travel : this.travelDriverList) {
             if (travel.compare(newTravel)) {
                 
-                travel.getUser().notifyPassengers(newTravel.getUser());
+                travel.getUser().notifyClient(newTravel.getUser());
                 
             }
         }
