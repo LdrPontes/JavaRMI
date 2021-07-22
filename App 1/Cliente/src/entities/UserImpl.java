@@ -3,10 +3,8 @@ package entities;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.*;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 
-import sign.DigitalSignReceiver;
 import sign.DigitalSignSender;
 
 public class UserImpl extends UnicastRemoteObject implements IUser {
@@ -69,7 +67,7 @@ public class UserImpl extends UnicastRemoteObject implements IUser {
         byte[] sign = this.sender.generateDigitalSign(String.valueOf(id));
 
         this.serverRef.cancelRideInterest(id, sign);
-        System.out.println("\n\nSeu interesse de carona id" + id + " foi cancelado");
+        System.out.println("\n\nSeu interesse de carona id " + id + " foi cancelado");
     }
 
     public void setPassengerInterest(String start, String end, String date, int passengerNumber) throws RemoteException, NotBoundException {

@@ -11,9 +11,9 @@ public interface IServer extends Remote {
     int registerPassengerInterest(IUser client, String start, String end, String date, int numberPassenger,
             byte[] sign) throws RemoteException, NotBoundException;
 
-    void cancelRideInterest(int id, byte[] sign) throws RemoteException;
+    String cancelRideInterest(int id, byte[] sign) throws RemoteException;
 
-    void cancelPassengerInterest(int id, byte[] sign) throws RemoteException;
+    String cancelPassengerInterest(int id, byte[] sign) throws RemoteException;
 
     String consultRide(String start, String end, String date) throws RemoteException;
 }

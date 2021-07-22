@@ -36,9 +36,9 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
             throws RemoteException, NotBoundException {
 
         int rideId = nextRideID++;
-        
+
         IUser user = (IUser) this.nameService.lookup(client.getTelephone());
- 
+
         this.receiver.getExternalMessage(user.getPublicKey(), start + end + date, sign);
 
         this.travelPassengerList.add(new Travel(rideId, user, start, end, date));
@@ -57,7 +57,7 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
 
         this.receiver.getExternalMessage(user.getPublicKey(), start + end + date + numberPassenger, sign);
 
-        this.travelPassengerList.add(new Travel(rideId, user, start, end, date, numberPassenger));
+        this.travelDriverList.add(new Travel(rideId, user, start, end, date, numberPassenger));
 
         this.notifyPassengers(rideId);
 
@@ -65,35 +65,70 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
     }
 
     @Override
-    public void cancelRideInterest(int id, byte[] sign) throws RemoteException {
+    public String cancelRideInterest(int id, byte[] sign) throws RemoteException {
+
+        int index = -1;
+
+        for (Travel travel: travelPassengerList) {
+            if (travel.getID() == id) {
+                index = travelPassengerList.indexOf(travel);
+                break;
+            }
+        }
+
+        if (index != -1) {
+            travelPassengerList.remove(index);
+            return "Removida com sucesso!";
+        } else {
+            return "Não foi possível encontrar o registro.";
+        }
+        
+    }
+
+    @Override
+    public String cancelPassengerInterest(int id, byte[] sign) throws RemoteException {
+
+        int index = -1;
+
+        for (Travel travel: travelDriverList) {
+            if (travel.getID() == id) {
+                index = travelDriverList.indexOf(travel);
+                break;
+            }
+        }
+
+        if (index != -1) {
+            travelDriverList.remove(index);
+            return "Removida com sucesso!";
+        } else {
+            return "Não foi possível encontrar o registro.";
+        }
 
     }
 
     @Override
-    public void cancelPassengerInterest(int id, byte[] sign) throws RemoteException {
-
-    }
-
-    @Override
-    public String consultRide(String start, String end, String date) throws RemoteException{
+    public String consultRide(String start, String end, String date) throws RemoteException {
 
         String result = "";
         Travel thisTravel = new Travel(-1, null, start, end, date);
 
-        for (Travel travel: this.travelDriverList) {
-            
+        for (Travel travel : this.travelDriverList) {
+
             if (thisTravel.compare(travel))
                 result = result.concat(travel.getUser().getName() + "\n\n");
         }
+
+        if (result.equals(""))
+            result = "Não há caronas disponíveis com estes requisitos";
 
         return result;
 
     }
 
     public void notifyPassengers(int idTravel) throws RemoteException {
-        
+
         Travel newTravel = null;
-        
+
         for (Travel travel : this.travelDriverList) {
             if (travel.getID() == idTravel) {
                 newTravel = travel;
@@ -101,13 +136,13 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
             }
         }
 
-        if(newTravel == null) {
+        if (newTravel == null) {
             return;
         }
 
         for (Travel travel : this.travelPassengerList) {
             if (travel.compare(newTravel)) {
-                
+
                 travel.getUser().notifyRide(newTravel.getUser());
 
             }
@@ -116,9 +151,8 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
 
     public void notifyDrivers(int idTravel) throws RemoteException {
 
-         
         Travel newTravel = null;
-        
+
         for (Travel travel : this.travelPassengerList) {
             if (travel.getID() == idTravel) {
                 newTravel = travel;
@@ -126,15 +160,15 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
             }
         }
 
-        if(newTravel == null) {
+        if (newTravel == null) {
             return;
         }
 
         for (Travel travel : this.travelDriverList) {
             if (travel.compare(newTravel)) {
-                
+
                 travel.getUser().notifyClient(newTravel.getUser());
-                
+
             }
         }
 
