@@ -27,7 +27,7 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
 
     @Override
     public void signUp(IUser client) throws RemoteException {
-        this.nameService.rebind(client.getTelephone(), UnicastRemoteObject.exportObject(client, 1099));
+        //this.nameService.rebind(client.getTelephone(), UnicastRemoteObject.exportObject(client, 1099));
         client.notify("\nBem-vindo " + client.getName());
     }
 
@@ -37,11 +37,11 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
 
         int rideId = nextRideID++;
 
-        IUser user = (IUser) this.nameService.lookup(client.getTelephone());
+        //IUser user = (IUser) this.nameService.lookup(client.getTelephone());
 
-        this.receiver.getExternalMessage(user.getPublicKey(), start + end + date, sign);
+        this.receiver.getExternalMessage(client.getPublicKey(), start + end + date, sign);
 
-        this.travelPassengerList.add(new Travel(rideId, user, start, end, date));
+        this.travelPassengerList.add(new Travel(rideId, client, start, end, date));
 
         this.notifyDrivers(rideId);
 
@@ -53,11 +53,11 @@ public class ServerImpl extends UnicastRemoteObject implements IServer {
             byte[] sign) throws RemoteException, NotBoundException {
         int rideId = nextRideID++;
 
-        IUser user = (IUser) this.nameService.lookup(client.getTelephone());
+        //IUser user = (IUser) this.nameService.lookup(client.getTelephone());
 
-        this.receiver.getExternalMessage(user.getPublicKey(), start + end + date + numberPassenger, sign);
+        this.receiver.getExternalMessage(client.getPublicKey(), start + end + date + numberPassenger, sign);
 
-        this.travelDriverList.add(new Travel(rideId, user, start, end, date, numberPassenger));
+        this.travelDriverList.add(new Travel(rideId, client, start, end, date, numberPassenger));
 
         this.notifyPassengers(rideId);
 
