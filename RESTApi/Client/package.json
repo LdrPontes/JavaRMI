@@ -1,0 +1,17 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/User.js",
+  "scripts": {
+    "start": "node src/User.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "eventsource": "^1.1.0",
+    "prompt-sync": "^4.2.0"
+  }
+}

@@ -29,7 +29,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/Users/ldrpontes/Documents/UTFPR/Sistemas Distribuídos/RESTApi/Server/venv"
+set -gx VIRTUAL_ENV "/Users/ldrpontes/Documents/UTFPR/Sistemas Distribuídos/JavaRMI/RESTApi/Server/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
