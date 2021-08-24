@@ -11,16 +11,14 @@ class UserImpl {
 
         this.source = new EventSource("http://localhost:5000/stream");
 
-        this.source.addEventListener(this.telephone + '/driver', function (event) {
+        this.source.addEventListener(this.telephone + '/driver', async function (event) {
             var data = JSON.parse(event.data);
-            console.log("Notificação de Passageiro " + JSON.stringify(data.message));
-            this.userTerminal()
+            console.log("Notificação de Passageiro " + JSON.stringify(data));
         }, false);
 
-        this.source.addEventListener(this.telephone + '/passenger', function (event) {
+        this.source.addEventListener(this.telephone + '/passenger', async function (event) {
             var data = JSON.parse(event.data);
-            console.log("Notificação de Carona " + JSON.stringify(data.message));
-            this.userTerminal()
+            console.log("Notificação de Carona " + JSON.stringify(data));
         }, false);
     }
 
@@ -33,14 +31,12 @@ class UserImpl {
             date: date
         });
         console.log("\n\nSeu id de interesse de carona é: " + response.data['id']);
-        this.userTerminal()
 
     }
 
     async cancelRideInterest(id) {
         const response = await http.delete('/cancel-ride-interest?id=' + id)
-        console.log("\n\n" + response.data['message'])
-        this.userTerminal()
+        console.log("\n\n" + response.data['message']);
     }
 
     async setPassengerInterest(start, end, date, passengerNumber) {
@@ -53,15 +49,12 @@ class UserImpl {
             number_passenger: passengerNumber,
         })
         console.log("\n\nSeu id de interesse de carona é: " + response.data['id']);
-
-        this.userTerminal()
     }
 
     async cancelPassengerInterest(id) {
 
         const response = await http.delete('/cancel-passenger-interest?id=' + id)
-        console.log("\n\n" + response.data['message'])
-        this.userTerminal()
+        console.log("\n\n" + response.data['message']);
     }
 
     async consultRide(start, end, date) {
@@ -75,13 +68,20 @@ class UserImpl {
             number_passenger: item.number_passenger,
         }));
         console.log('\n\n' + JSON.stringify(payload));
-
-        this.userTerminal()
     }
+}
 
-    userTerminal() {
+async function User() {
 
-        const prompt = require('prompt-sync')();
+    const prompt = require('prompt-sync')();
+
+    const name = prompt('Informe seu nome: ');
+
+    const telephone = prompt('Informe seu telefone: ');
+
+    const user = new UserImpl(name, telephone);
+
+    while (true) {
 
         console.log("\n\nEscolha uma opção: ");
         console.log("\t1 - Consultar caronas");
@@ -90,6 +90,7 @@ class UserImpl {
         console.log("\t4 - Registrar interesse em eventos de passageiros");
         console.log("\t5 - Cancelar interesse em eventos de passageiros");
         console.log("\t6 - Sair \n");
+        
 
         let nextOption = prompt();
 
@@ -99,7 +100,7 @@ class UserImpl {
                 let end = prompt("Informe o destino final: ");
                 let date = prompt("Informe a data (dd/mm/yyyy): ");
 
-                this.consultRide(start, end, date);
+                await user.consultRide(start, end, date);
                 break;
             }
 
@@ -109,13 +110,13 @@ class UserImpl {
                     let end = prompt("Informe o destino final: ");
                     let date = prompt("Informe a data (dd/mm/yyyy): ");
 
-                    this.setRideInterest(start, end, date);
+                    await user.setRideInterest(start, end, date);
                     break;
                 }
             case '3': {
                 let id = prompt("\n\nInforme o id do interesse para cancelar: ");
 
-                this.cancelRideInterest(id);
+                await user.cancelRideInterest(id);
                 break;
             }
 
@@ -126,33 +127,21 @@ class UserImpl {
                     let date = prompt("Informe a data (dd/mm/yyyy): ");
                     let passengerNumber = prompt("Informe o número de passageiros: ");
 
-                    this.setPassengerInterest(start, end, date, passengerNumber);
+                    await user.setPassengerInterest(start, end, date, passengerNumber);
                     break;
                 }
 
             case '5':
                 {
                     let id = prompt("\n\nInforme o id do interesse para cancelar: ");
-                    this.cancelPassengerInterest(id);
+                    await user.cancelPassengerInterest(id);
                     break;
                 }
 
             default:
                 return;
         }
-
     }
-}
-
-function User() {
-
-    const prompt = require('prompt-sync')();
-
-    const name = prompt('Informe seu nome: ');
-
-    const telephone = prompt('Informe seu telefone: ');
-
-    new UserImpl(name, telephone).userTerminal();
 
 }
 
