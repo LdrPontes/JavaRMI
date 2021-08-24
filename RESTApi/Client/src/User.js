@@ -90,7 +90,7 @@ async function User() {
         console.log("\t4 - Registrar interesse em eventos de passageiros");
         console.log("\t5 - Cancelar interesse em eventos de passageiros");
         console.log("\t6 - Sair \n");
-        
+
 
         let nextOption = prompt();
 
@@ -104,15 +104,14 @@ async function User() {
                 break;
             }
 
-            case '2':
-                {
-                    let start = prompt("Informe o destino de origem: ");
-                    let end = prompt("Informe o destino final: ");
-                    let date = prompt("Informe a data (dd/mm/yyyy): ");
+            case '2': {
+                let start = prompt("Informe o destino de origem: ");
+                let end = prompt("Informe o destino final: ");
+                let date = prompt("Informe a data (dd/mm/yyyy): ");
 
-                    await user.setRideInterest(start, end, date);
-                    break;
-                }
+                await user.setRideInterest(start, end, date);
+                break;
+            }
             case '3': {
                 let id = prompt("\n\nInforme o id do interesse para cancelar: ");
 
@@ -120,23 +119,21 @@ async function User() {
                 break;
             }
 
-            case '4':
-                {
-                    let start = prompt("\n\nInforme o destino de origem: ");
-                    let end = prompt("Informe o destino final: ");
-                    let date = prompt("Informe a data (dd/mm/yyyy): ");
-                    let passengerNumber = prompt("Informe o número de passageiros: ");
+            case '4': {
+                let start = prompt("\n\nInforme o destino de origem: ");
+                let end = prompt("Informe o destino final: ");
+                let date = prompt("Informe a data (dd/mm/yyyy): ");
+                let passengerNumber = prompt("Informe o número de passageiros: ");
 
-                    await user.setPassengerInterest(start, end, date, passengerNumber);
-                    break;
-                }
+                await user.setPassengerInterest(start, end, date, passengerNumber);
+                break;
+            }
 
-            case '5':
-                {
-                    let id = prompt("\n\nInforme o id do interesse para cancelar: ");
-                    await user.cancelPassengerInterest(id);
-                    break;
-                }
+            case '5': {
+                let id = prompt("\n\nInforme o id do interesse para cancelar: ");
+                await user.cancelPassengerInterest(id);
+                break;
+            }
 
             default:
                 return;
