@@ -91,7 +91,6 @@ async function User() {
         console.log("\t5 - Cancelar interesse em eventos de passageiros");
         console.log("\t6 - Sair \n");
 
-
         let nextOption = prompt();
 
         switch (nextOption) {

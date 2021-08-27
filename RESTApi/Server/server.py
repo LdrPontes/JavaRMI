@@ -55,14 +55,14 @@ def get_rides_helper(start: str, end: str, date: str):
 
 def cancel_passenger_interest_helper(id: int):
     for i in range(len(travel_driver_list)):
-        if travel_driver_list[i]['id'] == id:
+        if int(travel_driver_list[i]['id']) == int(id):
             del travel_driver_list[i]
             break
 
 
 def cancel_ride_interest_helper(id: int):
     for i in range(len(travel_passenger_list)):
-        if travel_passenger_list[i]['id'] == id:
+        if int(travel_passenger_list[i]['id']) == int(id):
             del travel_passenger_list[i]
             break
 
